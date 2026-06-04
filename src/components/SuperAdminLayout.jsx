@@ -237,9 +237,9 @@ export default function SuperAdminLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b flex items-center justify-between px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
+        <header className="min-h-[5rem] py-4 md:py-0 md:h-20 border-b flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
           <div>
-            <h1 className="text-slate-800 dark:text-white font-black text-xl tracking-wide">
+            <h1 className="text-slate-800 dark:text-white font-black text-lg md:text-xl tracking-wide text-center md:text-left">
               {getHeaderTitle()}
             </h1>
           </div>

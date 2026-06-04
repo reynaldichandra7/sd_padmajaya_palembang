@@ -475,10 +475,10 @@ export default function DashboardSuperAdmin() {
     <div className="w-full">
       {view === "dashboard" && (
         <div className="w-full animate-in fade-in duration-500">
-          <div className="mb-8 p-8 rounded-[32px] bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 text-white shadow-xl shadow-indigo-500/10 relative overflow-hidden flex flex-col justify-center text-left">
+          <div className="mb-8 p-6 md:p-8 rounded-[32px] bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 text-white shadow-xl shadow-indigo-500/10 relative overflow-hidden flex flex-col justify-center text-left md:text-left text-center">
             <div className="absolute -right-10 -top-10 w-44 h-44 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute -left-10 -bottom-10 w-36 h-36 bg-black/10 rounded-full blur-xl"></div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight flex items-center gap-2">
+            <h2 className="text-xl md:text-3xl font-black tracking-tight flex items-center justify-center md:justify-start gap-2">
               Selamat Datang di Pusat Kendali Tertinggi, Super Admin! 👑🚀
             </h2>
             <p className="mt-2 text-sm md:text-base text-indigo-100 font-medium max-w-4xl leading-relaxed">
