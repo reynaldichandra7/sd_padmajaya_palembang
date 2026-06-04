@@ -5,6 +5,7 @@ import logoPadmajaya from "../assets/logo_sdpadmajaya.png";
 
 export default function AdminLayout() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -99,10 +100,8 @@ export default function AdminLayout() {
     return "Panel Kontrol Admin";
   };
 
-  // 1. State untuk menampung teks tahun ajaran
   const [activeYear, setActiveYear] = useState("Memuat TA...");
 
-  // 2. Fungsi penarik data otomatis saat komponen dimuat
   useEffect(() => {
     const fetchActiveYear = async () => {
       try {
@@ -110,16 +109,11 @@ export default function AdminLayout() {
           .from("academic_years")
           .select("year_name")
           .eq("is_active", true)
-          .single(); // Ambil 1 data yang statusnya aktif
+          .single();
 
         if (error) throw error;
-
-        if (data) {
-          // Kamu bisa tambahkan "TA: " di depannya agar rapi
-          setActiveYear(`TA: ${data.year_name}`);
-        }
+        if (data) setActiveYear(`TA: ${data.year_name}`);
       } catch (err) {
-        console.error("Gagal menarik tahun ajaran:", err.message);
         setActiveYear("TA: Belum diatur");
       }
     };
@@ -128,28 +122,40 @@ export default function AdminLayout() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden">
-      <aside className="w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col hidden md:flex transition-colors duration-300">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden relative">
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"
+          onClick={() => setShowMobileMenu(false)}
+        ></div>
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+          showMobileMenu ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start shrink-0">
           <img
             src={logoPadmajaya}
             alt="Logo SD Padmajaya"
-            className="w-10 h-25 object-contain flex-shrink-0"
+            className="w-10 h-10 object-contain flex-shrink-0"
           />
           <div className="flex flex-col justify-center mt-0.5">
             <h2 className="text-xl font-black text-slate-800 dark:text-white leading-tight tracking-wide">
               SD Padmajaya
             </h2>
-            <p className="text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
-              Super Admin Center
+            <p className="text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
+              Admin Center
             </p>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
+        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
           <NavLink
             to="/admin"
             end
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -163,11 +169,11 @@ export default function AdminLayout() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth="2"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"
               />
             </svg>
@@ -176,6 +182,7 @@ export default function AdminLayout() {
 
           <NavLink
             to="/admin/master"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -189,11 +196,11 @@ export default function AdminLayout() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth="2"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
                 d="M4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.58 4 8 4s8-1.79 8-4M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4m0 5c0 2.21-3.58 4-8 4s-8-1.79-8-4"
               />
             </svg>
@@ -202,6 +209,7 @@ export default function AdminLayout() {
 
           <NavLink
             to="/admin/persetujuan"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -215,11 +223,11 @@ export default function AdminLayout() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth="2"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
               />
             </svg>
@@ -229,24 +237,25 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b flex items-center justify-between px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
-          <div>
-            <h1 className="text-slate-800 dark:text-white font-black text-xl tracking-wide">
+        <header className="h-16 md:h-20 border-b flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10 shrink-0">
+          <div className="flex-1">
+            <h1 className="text-slate-800 dark:text-white font-black text-[15px] md:text-xl tracking-wide line-clamp-1">
               {getHeaderTitle()}
             </h1>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="hidden sm:flex items-center px-4 py-2 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-200 dark:border-blue-500/20">
+          <div className="flex items-center gap-2 md:gap-4 pl-2">
+            <div className="hidden sm:flex items-center px-4 py-2 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-200 dark:border-blue-500/20 text-xs md:text-sm">
               {activeYear}
             </div>
+
             <button
               onClick={toggleDarkMode}
-              className="p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 md:p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
             >
               {isDark ? (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -260,7 +269,7 @@ export default function AdminLayout() {
                 </svg>
               ) : (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -276,23 +285,20 @@ export default function AdminLayout() {
             </button>
 
             <div className="relative">
-              {/* TOMBOL PROFIL UTAMA */}
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all"
+                className="flex items-center gap-2 p-1.5 pr-2 md:pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all"
               >
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-md shadow-blue-500/20 text-sm uppercase">
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-md shadow-blue-500/20 text-xs md:text-sm uppercase">
                   {userProfile.full_name
                     ? userProfile.full_name.charAt(0)
                     : "A"}
                 </div>
-
                 <div className="text-left hidden sm:block">
                   <div className="text-sm font-bold text-slate-800 dark:text-white leading-none mb-0.5 max-w-[140px] truncate">
                     {userProfile.full_name}
                   </div>
                   <div className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest leading-none mt-0.5">
-                    {/* Menampilkan role yang SEDANG AKTIF saat ini */}
                     {activeRole === "admin"
                       ? "Admin Master"
                       : activeRole === "homeroom"
@@ -302,9 +308,8 @@ export default function AdminLayout() {
                           : "Guru Mapel"}
                   </div>
                 </div>
-
                 <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 text-slate-400 hidden sm:block transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -318,7 +323,6 @@ export default function AdminLayout() {
                 </svg>
               </button>
 
-              {/* ISI DROPDOWN MENU */}
               {showProfileMenu && (
                 <>
                   <div
@@ -326,7 +330,6 @@ export default function AdminLayout() {
                     onClick={() => setShowProfileMenu(false)}
                   ></div>
                   <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 z-50 transform origin-top-right transition-all">
-                    {/* Header Dropdown */}
                     <div className="px-4 py-3 border-b border-slate-50 dark:border-slate-800/60 mb-2">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold uppercase">
@@ -345,7 +348,6 @@ export default function AdminLayout() {
                       </div>
                     </div>
 
-                    {/* Menu Pengaturan Standar */}
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);
@@ -365,7 +367,6 @@ export default function AdminLayout() {
                       Pengaturan Akun
                     </button>
 
-                    {/* --- SEKSI GANTI PERAN (Hanya muncul jika punya lebih dari 1 role) --- */}
                     {userProfile.roles &&
                       Array.isArray(userProfile.roles) &&
                       userProfile.roles.length > 1 && (
@@ -383,11 +384,7 @@ export default function AdminLayout() {
                                   setShowProfileMenu(false);
                                   handleSwitchRole(roleItem);
                                 }}
-                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${
-                                  activeRole === roleItem
-                                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600"
-                                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 border-l-2 border-transparent"
-                                }`}
+                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${activeRole === roleItem ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 border-l-2 border-transparent"}`}
                               >
                                 <span>
                                   {roleItem === "admin"
@@ -420,8 +417,6 @@ export default function AdminLayout() {
                       )}
 
                     <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2"></div>
-
-                    {/* Tombol Logout */}
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);
@@ -435,10 +430,29 @@ export default function AdminLayout() {
                 </>
               )}
             </div>
+
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-2 ml-1 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 hover:bg-blue-100 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
+        <main className="flex-1 p-4 lg:p-6 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
           <Outlet />
         </main>
       </div>

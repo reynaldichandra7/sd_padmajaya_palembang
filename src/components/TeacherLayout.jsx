@@ -5,6 +5,7 @@ import logoPadmajaya from "../assets/logo_sdpadmajaya.png";
 
 export default function TeacherLayout() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,7 +33,11 @@ export default function TeacherLayout() {
           if (data) {
             let primaryRole = "GURU PENGAJAR";
             if (data.roles?.includes("homeroom")) primaryRole = "WALI KELAS";
-            setUserProfile({ full_name: data.full_name, role: primaryRole });
+            setUserProfile({
+              full_name: data.full_name,
+              role: primaryRole,
+              roles: data.roles,
+            });
           }
         }
       } catch (err) {
@@ -89,27 +94,33 @@ export default function TeacherLayout() {
           .single();
 
         if (error) throw error;
-
-        if (data) {
-          setActiveYear(`TA: ${data.year_name}`);
-        }
+        if (data) setActiveYear(`TA: ${data.year_name}`);
       } catch (err) {
-        console.error("Gagal menarik tahun ajaran:", err.message);
         setActiveYear("TA: Belum diatur");
       }
     };
-
     fetchActiveYear();
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden">
-      <aside className="w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col hidden md:flex transition-colors duration-300">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden relative">
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"
+          onClick={() => setShowMobileMenu(false)}
+        ></div>
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+          showMobileMenu ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start shrink-0">
           <img
             src={logoPadmajaya}
             alt="Logo SD Padmajaya"
-            className="w-10 h-25 object-contain flex-shrink-0"
+            className="w-10 h-10 object-contain flex-shrink-0"
           />
           <div className="flex flex-col justify-center mt-0.5">
             <h2 className="text-xl font-black text-slate-800 dark:text-white leading-tight tracking-wide">
@@ -121,9 +132,11 @@ export default function TeacherLayout() {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
+        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
           <NavLink
             to="/guru"
+            end
+            onClick={() => setShowMobileMenu(false)}
             className={() =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 location.pathname === "/guru" ||
@@ -151,6 +164,7 @@ export default function TeacherLayout() {
 
           <NavLink
             to="/guru/kelas"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -177,6 +191,7 @@ export default function TeacherLayout() {
 
           <NavLink
             to="/guru/riwayat"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -204,24 +219,25 @@ export default function TeacherLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b flex items-center justify-between px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
-          <div>
-            <h1 className="text-slate-800 dark:text-white font-black text-xl tracking-wide">
+        <header className="h-16 md:h-20 border-b flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10 shrink-0">
+          <div className="flex-1">
+            <h1 className="text-slate-800 dark:text-white font-black text-[15px] md:text-xl tracking-wide line-clamp-1">
               {getHeaderTitle()}
             </h1>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="hidden sm:flex items-center px-4 py-2 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-xl border border-amber-200 dark:border-amber-500/20">
+          <div className="flex items-center gap-2 md:gap-4 pl-2">
+            <div className="hidden sm:flex items-center px-4 py-2 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-xl border border-amber-200 dark:border-amber-500/20 text-xs md:text-sm">
               {activeYear}
             </div>
+
             <button
               onClick={toggleDarkMode}
-              className="p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 md:p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
             >
               {isDark ? (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -235,7 +251,7 @@ export default function TeacherLayout() {
                 </svg>
               ) : (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -253,9 +269,9 @@ export default function TeacherLayout() {
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 transition-all"
+                className="flex items-center gap-2 p-1.5 pr-2 md:pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 transition-all"
               >
-                <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/20 text-sm uppercase">
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/20 text-xs md:text-sm uppercase">
                   {userProfile.full_name
                     ? userProfile.full_name.charAt(0)
                     : "G"}
@@ -269,7 +285,7 @@ export default function TeacherLayout() {
                   </div>
                 </div>
                 <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 text-slate-400 hidden sm:block transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -326,6 +342,43 @@ export default function TeacherLayout() {
                     >
                       Pengaturan Akun
                     </button>
+
+                    {userProfile.roles &&
+                      Array.isArray(userProfile.roles) &&
+                      userProfile.roles.length > 1 && (
+                        <>
+                          <div className="px-4 py-2 mt-2 bg-slate-50 dark:bg-[#0F172A]/30">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                              Ganti Mode:
+                            </span>
+                          </div>
+                          {[...new Set(userProfile.roles)].map(
+                            (roleItem, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  setShowProfileMenu(false);
+                                  localStorage.setItem("activeRole", roleItem);
+                                  if (roleItem === "admin") navigate("/admin");
+                                  else if (roleItem === "homeroom")
+                                    navigate("/wali-kelas");
+                                  else navigate("/guru");
+                                }}
+                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 border-l-2 border-transparent"
+                              >
+                                <span>
+                                  {roleItem === "admin"
+                                    ? "Sistem Admin"
+                                    : roleItem === "homeroom"
+                                      ? "Wali Kelas"
+                                      : "Akses Guru"}
+                                </span>
+                              </button>
+                            ),
+                          )}
+                        </>
+                      )}
+
                     <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2"></div>
                     <button
                       onClick={() => {
@@ -340,10 +393,29 @@ export default function TeacherLayout() {
                 </>
               )}
             </div>
+
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-2 ml-1 rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 hover:bg-amber-100 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
+        <main className="flex-1 p-4 lg:p-6 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
           <Outlet />
         </main>
       </div>

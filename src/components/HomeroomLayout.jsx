@@ -5,6 +5,7 @@ import logoPadmajaya from "../assets/logo_sdpadmajaya.png";
 
 export default function HomeroomLayout() {
   const location = useLocation();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [activeRole, setActiveRole] = useState(
     localStorage.getItem("activeRole") || "homeroom",
@@ -19,44 +20,17 @@ export default function HomeroomLayout() {
     if (newRole === "admin") {
       navigate("/admin");
     } else if (newRole === "homeroom") {
-      navigate("/wali-kelas"); // Sesuaikan dengan path rute wali kelasmu
+      navigate("/wali-kelas");
     } else if (newRole === "teacher") {
       navigate("/guru");
     }
   };
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        // 1. Dapatkan sesi user yang sedang aktif
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return; // Kalau belum login, hentikan
-
-        // 2. Ambil data profil dari Supabase berdasarkan ID user
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-
-        // 3. Simpan ke dalam state userProfile
-        setUserProfile(data);
-      } catch (error) {
-        console.error("Gagal mengambil data profil:", error.message);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
-
   const [userProfile, setUserProfile] = useState({
     full_name: "Loading...",
     role: "WALI KELAS",
   });
+  const [myClass, setMyClass] = useState(null);
 
   useEffect(() => {
     const fetchLoggedUser = async () => {
@@ -75,8 +49,21 @@ export default function HomeroomLayout() {
             .single();
           if (error) throw error;
           if (data) {
-            setUserProfile({ full_name: data.full_name, role: "WALI KELAS" });
+            setUserProfile({
+              full_name: data.full_name,
+              role: "WALI KELAS",
+              roles: data.roles,
+              email: data.email,
+              username: data.username,
+            });
           }
+
+          const { data: classData } = await supabase
+            .from("classes")
+            .select("id, class_name")
+            .eq("homeroom_teacher_id", user.id)
+            .maybeSingle();
+          if (classData) setMyClass(classData);
         }
       } catch (err) {
         setUserProfile({ full_name: "Wali Kelas", role: "WALI KELAS" });
@@ -102,6 +89,7 @@ export default function HomeroomLayout() {
     setIsDark(newTheme);
     localStorage.setItem("sd_padmajaya_theme", newTheme ? "dark" : "light");
   };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -114,16 +102,15 @@ export default function HomeroomLayout() {
   const getHeaderTitle = () => {
     if (location.pathname.includes("/wali-kelas/siswa"))
       return "Data Siswa Kelasku";
-    if (location.pathname.includes("/wali-kelas/profil")) return "Profil Saya";
+    if (location.pathname.includes("/wali-kelas/profile-akun"))
+      return "Profil Saya";
     if (location.pathname.includes("/wali-kelas/pengaturan-akun"))
       return "Pengaturan Keamanan";
     return "Pusat Kendali Wali Kelas";
   };
 
-  // 1. State untuk menampung teks tahun ajaran
   const [activeYear, setActiveYear] = useState("Memuat TA...");
 
-  // 2. Fungsi penarik data otomatis saat komponen dimuat
   useEffect(() => {
     const fetchActiveYear = async () => {
       try {
@@ -131,47 +118,54 @@ export default function HomeroomLayout() {
           .from("academic_years")
           .select("year_name")
           .eq("is_active", true)
-          .single(); // Ambil 1 data yang statusnya aktif
+          .single();
 
         if (error) throw error;
-
-        if (data) {
-          // Kamu bisa tambahkan "TA: " di depannya agar rapi
-          setActiveYear(`TA: ${data.year_name}`);
-        }
+        if (data) setActiveYear(`TA: ${data.year_name}`);
       } catch (err) {
-        console.error("Gagal menarik tahun ajaran:", err.message);
         setActiveYear("TA: Belum diatur");
       }
     };
-
     fetchActiveYear();
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden">
-      <aside className="w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col hidden md:flex transition-colors duration-300">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden relative">
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"
+          onClick={() => setShowMobileMenu(false)}
+        ></div>
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+          showMobileMenu ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start shrink-0">
           <img
             src={logoPadmajaya}
             alt="Logo SD Padmajaya"
-            className="w-10 h-25 object-contain flex-shrink-0"
+            className="w-10 h-10 object-contain flex-shrink-0"
           />
           <div className="flex flex-col justify-center mt-0.5">
             <h2 className="text-xl font-black text-slate-800 dark:text-white leading-tight tracking-wide">
               SD Padmajaya
             </h2>
-            <p className="text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
+            <p className="text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
               Super Admin Center
             </p>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
+        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
           <NavLink
             to="/wali-kelas"
-            className={() =>
-              `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${location.pathname === "/wali-kelas" ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50"}`
+            end
+            onClick={() => setShowMobileMenu(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50"}`
             }
           >
             <svg
@@ -192,12 +186,9 @@ export default function HomeroomLayout() {
 
           <NavLink
             to="/wali-kelas/input-absensi"
-            className={() =>
-              `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
-                location.pathname === "/wali-kelas/input-absensi"
-                  ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
-                  : "text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-              }`
+            onClick={() => setShowMobileMenu(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30" : "text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"}`
             }
           >
             <svg
@@ -218,6 +209,7 @@ export default function HomeroomLayout() {
 
           <NavLink
             to="/wali-kelas/siswa"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50"}`
             }
@@ -241,25 +233,25 @@ export default function HomeroomLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b flex items-center justify-between px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
-          <div>
-            <h1 className="text-slate-800 dark:text-white font-black text-xl tracking-wide">
+        <header className="h-16 md:h-20 border-b flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10 shrink-0">
+          <div className="flex-1">
+            <h1 className="text-slate-800 dark:text-white font-black text-[15px] md:text-xl tracking-wide line-clamp-1">
               {getHeaderTitle()}
             </h1>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="hidden sm:flex items-center px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold rounded-xl border border-emerald-200 dark:border-emerald-500/20">
+          <div className="flex items-center gap-2 md:gap-4 pl-2">
+            <div className="hidden sm:flex items-center px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold rounded-xl border border-emerald-200 dark:border-emerald-500/20 text-xs md:text-sm">
               {activeYear}
             </div>
 
             <button
               onClick={toggleDarkMode}
-              className="p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 md:p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
             >
               {isDark ? (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -273,7 +265,7 @@ export default function HomeroomLayout() {
                 </svg>
               ) : (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -291,14 +283,13 @@ export default function HomeroomLayout() {
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all"
+                className="flex items-center gap-2 p-1.5 pr-2 md:pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all"
               >
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-emerald-500/20 text-sm uppercase">
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-emerald-500/20 text-xs md:text-sm uppercase">
                   {userProfile?.full_name
                     ? userProfile.full_name.charAt(0)
-                    : "G"}
+                    : "W"}
                 </div>
-
                 <div className="text-left hidden sm:block">
                   <div className="text-sm font-bold text-slate-800 dark:text-white leading-none mb-0.5 max-w-[140px] truncate">
                     {userProfile?.full_name}
@@ -311,9 +302,8 @@ export default function HomeroomLayout() {
                         : "Guru Mapel"}
                   </div>
                 </div>
-
                 <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 text-slate-400 hidden sm:block transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -339,7 +329,7 @@ export default function HomeroomLayout() {
                         <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold uppercase">
                           {userProfile?.full_name
                             ? userProfile.full_name.charAt(0)
-                            : "G"}
+                            : "W"}
                         </div>
                         <div>
                           <div className="text-sm font-bold text-slate-800 dark:text-white max-w-[140px] truncate">
@@ -361,18 +351,16 @@ export default function HomeroomLayout() {
                     >
                       Profile Saya
                     </button>
-
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate("/wali-kelas/pengaturan-akun");
-                      }} // Sesuaikan URL
+                      }}
                       className="w-full text-left px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 font-medium transition-colors"
                     >
                       Pengaturan Akun
                     </button>
 
-                    {/* SEKSI GANTI PERAN */}
                     {userProfile?.roles &&
                       Array.isArray(userProfile.roles) &&
                       userProfile.roles.length > 1 && (
@@ -390,11 +378,7 @@ export default function HomeroomLayout() {
                                   setShowProfileMenu(false);
                                   handleSwitchRole(roleItem);
                                 }}
-                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${
-                                  activeRole === roleItem
-                                    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-600"
-                                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 border-l-2 border-transparent"
-                                }`}
+                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${activeRole === roleItem ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-600" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0F172A]/50 border-l-2 border-transparent"}`}
                               >
                                 <span>
                                   {roleItem === "admin"
@@ -438,10 +422,29 @@ export default function HomeroomLayout() {
                 </>
               )}
             </div>
+
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-2 ml-1 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 hover:bg-emerald-100 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
           <Outlet />
         </main>
       </div>
