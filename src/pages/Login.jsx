@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { logActivity } from '../logger';
+import { logActivity } from "../logger";
 import logoPadmajaya from "../assets/logo_sdpadmajaya.png";
 
 export default function Login() {
@@ -74,7 +74,7 @@ export default function Login() {
         authData.user.id,
         `Melakukan login ke dalam sistem (Role: ${primaryRole})`,
         "AUTH",
-        authData.user.id
+        authData.user.id,
       );
 
       navigate(targetRoute);
@@ -86,18 +86,23 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-900">
+    // Tambahkan px-4 agar di HP tidak mentok pinggir, p-4 md:p-0 untuk atas-bawah
+    <div className="flex items-center justify-center min-h-screen bg-slate-900 px-4 py-8 md:p-0">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-10 rounded-[32px] w-full max-w-md shadow-2xl transition-all duration-300"
+        // Ubah p-10 menjadi p-8 di HP, dan md:p-12 di laptop agar proporsional
+        className="bg-white p-8 md:p-12 rounded-[32px] w-full max-w-md shadow-2xl transition-all duration-300"
       >
-        <img
-          src={logoPadmajaya}
-          alt="Logo SD Padmajaya"
-          className="w-100 h-90 object-contain"
-        />
+        <div className="flex justify-center mb-6">
+          <img
+            src={logoPadmajaya}
+            alt="Logo SD Padmajaya"
+            // Perbaiki ukuran logo menjadi w-28 (HP) dan md:w-36 (Laptop)
+            className="w-28 md:w-36 h-auto object-contain drop-shadow-md"
+          />
+        </div>
 
-        <h1 className="text-2xl font-black mb-8 text-slate-800 text-center tracking-tight">
+        <h1 className="text-xl md:text-2xl font-black mb-8 text-slate-800 text-center tracking-tight">
           Login SD Padmajaya
         </h1>
 
@@ -109,14 +114,13 @@ export default function Login() {
             <input
               required
               type="text"
-              className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 transition-all"
+              className="w-full p-3.5 md:p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 transition-all text-sm md:text-base"
               placeholder="Username atau Email Anda"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
             />
           </div>
 
-          {/* PASSWORD DENGAN IKON MATA */}
           <div className="relative">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
               Password
@@ -124,7 +128,7 @@ export default function Login() {
             <input
               required
               type={showPassword ? "text" : "password"}
-              className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 pr-12 transition-all"
+              className="w-full p-3.5 md:p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 pr-12 transition-all text-sm md:text-base"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -132,7 +136,8 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-[38px] text-slate-400 hover:text-indigo-600 transition-colors"
+              // Sesuaikan posisi tombol mata agar pas di tengah input
+              className="absolute right-4 top-[34px] md:top-[38px] text-slate-400 hover:text-indigo-600 transition-colors"
             >
               {showPassword ? (
                 <svg
@@ -178,7 +183,7 @@ export default function Login() {
 
           <button
             disabled={loading}
-            className="w-full py-4 mt-2 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 disabled:opacity-50"
+            className="w-full py-3.5 md:py-4 mt-2 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 disabled:opacity-50"
           >
             {loading ? "Memproses..." : "Masuk ke Sistem"}
           </button>
