@@ -5,6 +5,9 @@ import logoPadmajaya from "../assets/logo_sdpadmajaya.png";
 
 export default function SuperAdminLayout() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  // State baru untuk mengontrol sidebar di HP
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -105,13 +108,26 @@ export default function SuperAdminLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden">
-      <aside className="w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col hidden md:flex transition-colors duration-300">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0F172A] font-sans transition-colors duration-300 overflow-hidden relative">
+      {/* OVERLAY GELAP UNTUK MOBILE SAAT SIDEBAR TERBUKA */}
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"
+          onClick={() => setShowMobileMenu(false)}
+        ></div>
+      )}
+
+      {/* SIDEBAR RESPONSIVE */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1E293B] border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+          showMobileMenu ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <div className="p-6 border-b border-slate-200 dark:border-slate-800/60 h-20 flex flex-row items-center gap-3 justify-start">
           <img
             src={logoPadmajaya}
             alt="Logo SD Padmajaya"
-            className="w-10 h-25 object-contain flex-shrink-0"
+            className="w-10 h-10 object-contain flex-shrink-0"
           />
           <div className="flex flex-col justify-center mt-0.5">
             <h2 className="text-xl font-black text-slate-800 dark:text-white leading-tight tracking-wide">
@@ -123,10 +139,11 @@ export default function SuperAdminLayout() {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
+        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
           <NavLink
             to="/super-admin"
             end
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -153,6 +170,7 @@ export default function SuperAdminLayout() {
 
           <NavLink
             to="/super-admin/pengguna"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -179,6 +197,7 @@ export default function SuperAdminLayout() {
 
           <NavLink
             to="/super-admin/log-aktivitas"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -205,6 +224,7 @@ export default function SuperAdminLayout() {
 
           <NavLink
             to="/super-admin/pengaturan"
+            onClick={() => setShowMobileMenu(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${
                 isActive
@@ -237,21 +257,23 @@ export default function SuperAdminLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="min-h-[5rem] py-4 md:py-0 md:h-20 border-b flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 px-6 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10">
-          <div>
-            <h1 className="text-slate-800 dark:text-white font-black text-lg md:text-xl tracking-wide text-center md:text-left">
+        {/* HEADER DIPERBAIKI MENJADI 1 BARIS */}
+        <header className="h-16 md:h-20 border-b flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800/80 transition-colors duration-300 z-10 shrink-0">
+          <div className="flex-1">
+            <h1 className="text-slate-800 dark:text-white font-black text-[15px] md:text-xl tracking-wide line-clamp-1">
               {getHeaderTitle()}
             </h1>
           </div>
 
-          <div className="flex items-center gap-5">
+          {/* GRUP TOMBOL KANAN */}
+          <div className="flex items-center gap-2 md:gap-4 pl-2">
             <button
               onClick={toggleDarkMode}
-              className="p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 md:p-3 rounded-xl bg-slate-100 dark:bg-[#0F172A] text-slate-500 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
             >
               {isDark ? (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -265,7 +287,7 @@ export default function SuperAdminLayout() {
                 </svg>
               ) : (
                 <svg
-                  className="w-5 h-5"
+                  className="w-4.5 h-4.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -280,17 +302,17 @@ export default function SuperAdminLayout() {
               )}
             </button>
 
+            {/* TOMBOL PROFIL */}
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all"
+                className="flex items-center gap-2 p-1.5 pr-2 md:pr-4 rounded-2xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/60 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all"
               >
-                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-500/20 text-sm uppercase">
+                <div className="w-7 h-7 md:w-9 md:h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-500/20 text-xs md:text-sm uppercase">
                   {userProfile.full_name
                     ? userProfile.full_name.charAt(0)
                     : "A"}
                 </div>
-
                 <div className="text-left hidden sm:block">
                   <div className="text-sm font-bold text-slate-800 dark:text-white leading-none mb-0.5 max-w-[140px] truncate">
                     {userProfile.full_name}
@@ -299,9 +321,8 @@ export default function SuperAdminLayout() {
                     {userProfile.role}
                   </div>
                 </div>
-
                 <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 text-slate-400 hidden sm:block transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -339,7 +360,6 @@ export default function SuperAdminLayout() {
                         </div>
                       </div>
                     </div>
-
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);
@@ -372,10 +392,30 @@ export default function SuperAdminLayout() {
                 </>
               )}
             </div>
+
+            {/* TOMBOL HAMBURGER - KHUSUS MOBILE DI POJOK KANAN */}
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-2 ml-1 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 hover:bg-indigo-100 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
           <Outlet />
         </main>
       </div>
