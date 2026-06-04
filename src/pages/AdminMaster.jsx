@@ -356,16 +356,13 @@ export default function AdminMaster() {
 
   const handleBulkDeleteSchedules = async () => {
     if (selectedScheduleIds.length === 0) return;
-
     setLoading(true);
     try {
       const { error } = await supabase
         .from("teaching_schedule")
         .delete()
         .in("id", selectedScheduleIds);
-
       if (error) throw error;
-
       setSelectedScheduleIds([]);
       setShowBulkDeleteModal(false);
       fetchActiveTabData();
@@ -385,10 +382,10 @@ export default function AdminMaster() {
   };
 
   return (
-    <div className="relative bg-white dark:bg-[#172033] p-6 lg:p-8 rounded-[28px] shadow-sm border border-slate-200 dark:border-slate-800/80 transition-colors duration-300 min-h-[80vh]">
+    <div className="relative bg-white dark:bg-[#172033] p-4 md:p-6 lg:p-8 rounded-[24px] md:rounded-[28px] shadow-sm border border-slate-200 dark:border-slate-800/80 transition-colors duration-300 min-h-[80vh]">
       <button
         onClick={() => navigate("/admin")}
-        className="group flex items-center gap-3 text-sm font-bold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors mb-8"
+        className="group flex items-center gap-3 text-sm font-bold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors mb-6 md:mb-8"
       >
         <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/60 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition-colors">
           <svg
@@ -410,11 +407,11 @@ export default function AdminMaster() {
 
       {toast.show && (
         <div
-          className={`fixed top-8 right-8 z-50 px-6 py-4 rounded-2xl font-bold text-white shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-0 opacity-100 ${toast.type === "success" ? "bg-emerald-500 shadow-emerald-500/20" : "bg-rose-500 shadow-rose-500/20"}`}
+          className={`fixed top-8 right-4 left-4 md:left-auto md:right-8 z-50 px-6 py-4 rounded-2xl font-bold text-white shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-0 opacity-100 ${toast.type === "success" ? "bg-emerald-500 shadow-emerald-500/20" : "bg-rose-500 shadow-rose-500/20"}`}
         >
           {toast.type === "success" ? (
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -428,7 +425,7 @@ export default function AdminMaster() {
             </svg>
           ) : (
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -441,16 +438,17 @@ export default function AdminMaster() {
               />
             </svg>
           )}
-          {toast.message}
+          <span className="text-sm md:text-base">{toast.message}</span>
         </div>
       )}
 
-      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-8 overflow-x-auto gap-2 lg:gap-6 pb-2">
+      {/* TAB MENU DENGAN OVERFLOW-X-AUTO AGAR BISA DIGESER DI HP */}
+      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap gap-4 lg:gap-6 pb-2 scrollbar-hide">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`pb-3 text-sm font-bold transition-all whitespace-nowrap relative ${activeTab === tab.id ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"}`}
+            className={`pb-3 text-sm font-bold transition-all relative ${activeTab === tab.id ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"}`}
           >
             {tab.label}
             {activeTab === tab.id && (
@@ -462,11 +460,12 @@ export default function AdminMaster() {
 
       <div className="py-2">
         {loading && (
-          <p className="text-slate-500 dark:text-slate-400 italic mb-4 animate-pulse">
+          <p className="text-slate-500 dark:text-slate-400 italic mb-4 animate-pulse text-sm md:text-base">
             Memuat data sinkronisasi...
           </p>
         )}
 
+        {/* TAB SISWA */}
         {activeTab === "siswa" && (
           <section className="animate-fadeIn">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6 bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm w-full">
@@ -475,20 +474,11 @@ export default function AdminMaster() {
                   <select
                     value={selectedClassFilter}
                     onChange={(e) => setSelectedClassFilter(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] transition-colors appearance-none cursor-pointer text-slate-700 dark:text-slate-200"
+                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 transition-colors appearance-none cursor-pointer text-slate-700 dark:text-slate-200"
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                    >
-                      Semua Kelas
-                    </option>
+                    <option value="">Semua Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
@@ -507,12 +497,12 @@ export default function AdminMaster() {
                     placeholder="Cari nama siswa atau NIS..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] transition-colors placeholder:text-slate-400 text-slate-900"
+                    className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 transition-colors placeholder:text-slate-400 text-slate-900"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors text-xs"
+                      className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors text-xs"
                     >
                       ✕
                     </button>
@@ -530,7 +520,7 @@ export default function AdminMaster() {
             </div>
 
             <div className="overflow-x-auto border border-slate-200 dark:border-slate-800/60 rounded-2xl">
-              <table className="w-full text-left border-collapse text-sm">
+              <table className="w-full text-left border-collapse text-sm whitespace-nowrap">
                 <thead className="bg-slate-50 dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800/60">
                   <tr>
                     <th className="p-4 font-bold">Nama Siswa</th>
@@ -617,6 +607,7 @@ export default function AdminMaster() {
           </section>
         )}
 
+        {/* TAB GURU */}
         {activeTab === "guru" && (
           <section className="animate-fadeIn">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6 bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm w-full">
@@ -629,12 +620,12 @@ export default function AdminMaster() {
                   placeholder="Cari nama guru, username, atau jabatan..."
                   value={searchTeacherQuery}
                   onChange={(e) => setSearchTeacherQuery(e.target.value)}
-                  className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] transition-colors placeholder:text-slate-400 text-slate-900"
+                  className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 transition-colors placeholder:text-slate-400 text-slate-900"
                 />
                 {searchTeacherQuery && (
                   <button
                     onClick={() => setSearchTeacherQuery("")}
-                    className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors text-xs"
+                    className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors text-xs"
                   >
                     ✕
                   </button>
@@ -650,14 +641,14 @@ export default function AdminMaster() {
               </div>
             </div>
             <div className="overflow-x-auto border border-slate-200 dark:border-slate-800/60 rounded-2xl">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
                   <tr className="bg-slate-50/50 dark:bg-[#1E293B]/50 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <th className="p-4">Nama Lengkap</th>
                     <th className="p-4 text-left">Posisi / Role</th>
                     <th className="p-4 text-left">Email</th>
                     <th className="p-4 text-left">Username</th>
-                    <th className="p-4 text-center w-32">Aksi</th>
+                    <th className="p-4 text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -680,7 +671,7 @@ export default function AdminMaster() {
                           {t.full_name}
                         </td>
                         <td className="p-4">
-                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md text-xs font-black uppercase tracking-wider">
+                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md text-[11px] font-black uppercase tracking-wider">
                             {t.roles === "homeroom" ||
                             t.roles?.includes("homeroom")
                               ? "Wali Kelas"
@@ -714,7 +705,7 @@ export default function AdminMaster() {
                                 });
                                 setShowEditTeacherModal(true);
                               }}
-                              className="text-amber-500 dark:text-amber-400 font-bold hover:underline"
+                              className="text-amber-500 dark:text-amber-400 font-bold hover:underline text-sm"
                             >
                               Edit
                             </button>
@@ -727,7 +718,7 @@ export default function AdminMaster() {
                                 });
                                 setShowDeleteModal(true);
                               }}
-                              className="text-rose-600 dark:text-rose-400 font-bold hover:underline"
+                              className="text-rose-600 dark:text-rose-400 font-bold hover:underline text-sm"
                             >
                               Hapus
                             </button>
@@ -742,11 +733,13 @@ export default function AdminMaster() {
           </section>
         )}
 
+        {/* TAB MAPEL */}
         {activeTab === "mapel" &&
           (() => {
             const [colLeft, colRight] = splitArray(subjects);
             return (
               <section className="animate-fadeIn">
+                {/* INI BAGIAN UTAMA YANG DIPERBAIKI (FLEX-COL KE FLEX-ROW) */}
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -754,29 +747,30 @@ export default function AdminMaster() {
                       setNewSubject({ subject_name: "" }),
                     );
                   }}
-                  className="flex gap-4 mb-8 bg-slate-50 dark:bg-[#0F172A] p-5 rounded-2xl border border-slate-200 dark:border-slate-800/60"
+                  className="flex flex-col md:flex-row gap-3 md:gap-4 mb-6 md:mb-8 bg-slate-50 dark:bg-[#0F172A] p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800/60"
                 >
                   <input
                     placeholder="Nama Mata Pelajaran"
-                    className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] dark:text-white p-3 rounded-xl flex-1 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B]"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] dark:text-white p-3.5 md:p-3 rounded-xl flex-1 text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                     value={newSubject.subject_name}
                     onChange={(e) =>
                       setNewSubject({ subject_name: e.target.value })
                     }
                     required
                   />
-                  <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30">
+                  <button className="w-full md:w-auto bg-indigo-600 text-white px-8 py-3.5 md:py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30 whitespace-nowrap text-sm md:text-base">
                     + Tambah Mapel
                   </button>
                 </form>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-6">
                   <div className="flex flex-col gap-3">
                     {colLeft.map((sub) => (
                       <div
                         key={sub.id}
                         className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl flex justify-between items-center bg-white dark:bg-[#1E293B] shadow-sm"
                       >
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                        <span className="font-medium text-slate-700 dark:text-slate-300 text-sm md:text-base">
                           {sub.subject_name}
                         </span>
                         <button
@@ -788,7 +782,7 @@ export default function AdminMaster() {
                             });
                             setShowDeleteModal(true);
                           }}
-                          className="text-rose-600 dark:text-rose-400 font-bold hover:underline"
+                          className="text-rose-600 dark:text-rose-400 font-bold hover:underline text-sm md:text-base"
                         >
                           Hapus
                         </button>
@@ -801,7 +795,7 @@ export default function AdminMaster() {
                         key={sub.id}
                         className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl flex justify-between items-center bg-white dark:bg-[#1E293B] shadow-sm"
                       >
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                        <span className="font-medium text-slate-700 dark:text-slate-300 text-sm md:text-base">
                           {sub.subject_name}
                         </span>
                         <button
@@ -813,7 +807,7 @@ export default function AdminMaster() {
                             });
                             setShowDeleteModal(true);
                           }}
-                          className="text-rose-600 dark:text-rose-400 font-bold hover:underline"
+                          className="text-rose-600 dark:text-rose-400 font-bold hover:underline text-sm md:text-base"
                         >
                           Hapus
                         </button>
@@ -825,10 +819,11 @@ export default function AdminMaster() {
             );
           })()}
 
+        {/* TAB JADWAL */}
         {activeTab === "jadwal" && (
           <section className="animate-fadeIn">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6 bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm w-full">
-              <div className="flex flex-col sm:flex-row gap-3 items-center w-full md:w-auto flex-1 max-w-3xl">
+            <div className="flex flex-col xl:flex-row gap-4 items-center justify-between mb-6 bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm w-full">
+              <div className="flex flex-col sm:flex-row gap-3 items-center w-full xl:w-auto flex-1 max-w-3xl">
                 <div className="relative w-full sm:w-40 shrink-0">
                   <select
                     value={selectedDayScheduleFilter}
@@ -836,20 +831,11 @@ export default function AdminMaster() {
                       setSelectedDayScheduleFilter(e.target.value);
                       setSelectedScheduleIds([]);
                     }}
-                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] text-slate-700 dark:text-slate-200 appearance-none cursor-pointer"
+                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                    >
-                      Semua Hari
-                    </option>
+                    <option value="">Semua Hari</option>
                     {["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].map((d) => (
-                      <option
-                        key={d}
-                        value={d}
-                        className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                      >
+                      <option key={d} value={d}>
                         {d}
                       </option>
                     ))}
@@ -865,20 +851,11 @@ export default function AdminMaster() {
                       setSelectedClassScheduleFilter(e.target.value);
                       setSelectedScheduleIds([]);
                     }}
-                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] text-slate-700 dark:text-slate-200 appearance-none cursor-pointer"
+                    className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white pl-4 pr-10 py-3 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                    >
-                      Semua Kelas
-                    </option>
+                    <option value="">Semua Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#1E293B] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
@@ -893,25 +870,27 @@ export default function AdminMaster() {
                   </span>
                   <input
                     type="text"
-                    placeholder="Cari nama guru, kelas, atau mapel..."
+                    placeholder="Cari guru, kelas..."
                     value={searchScheduleQuery}
                     onChange={(e) => {
                       setSearchScheduleQuery(e.target.value);
                       setSelectedScheduleIds([]);
                     }}
-                    className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:bg-[#1E293B] placeholder:text-slate-400 text-slate-900"
+                    className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] dark:text-white rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400 text-slate-900"
                   />
                   {searchScheduleQuery && (
                     <button
                       onClick={() => setSearchScheduleQuery("")}
-                      className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors text-xs"
+                      className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors text-xs"
                     >
                       ✕
                     </button>
                   )}
                 </div>
               </div>
-              <div className="w-full md:w-auto shrink-0 flex items-center gap-2">
+
+              {/* ACTION BUTTONS (Dibuat tumpuk di HP agar rapi) */}
+              <div className="w-full xl:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-2">
                 {selectedScheduleIds.length > 0 && (
                   <>
                     {selectedScheduleIds.length === 1 && (
@@ -934,14 +913,14 @@ export default function AdminMaster() {
                             setShowEditScheduleModal(true);
                           }
                         }}
-                        className="w-full md:w-auto bg-amber-500 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto bg-amber-500 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-amber-600 transition-all shadow-lg flex items-center justify-center gap-2"
                       >
                         ✏️ Edit
                       </button>
                     )}
                     <button
                       onClick={handleBulkDeleteSchedules}
-                      className="w-full md:w-auto bg-rose-600 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-rose-700 transition-all shadow-lg shadow-rose-500/20 active:scale-[0.98] flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto bg-rose-600 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-rose-700 transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                       🗑️ Hapus ({selectedScheduleIds.length})
                     </button>
@@ -949,7 +928,7 @@ export default function AdminMaster() {
                 )}
                 <button
                   onClick={() => setShowAddScheduleModal(true)}
-                  className="w-full md:w-auto bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98] whitespace-nowrap"
+                  className="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl md:rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg whitespace-nowrap"
                 >
                   + Tambah Jadwal
                 </button>
@@ -957,7 +936,7 @@ export default function AdminMaster() {
             </div>
 
             <div className="overflow-x-auto border border-slate-200 dark:border-slate-800/60 rounded-2xl">
-              <table className="w-full text-sm text-left border-collapse">
+              <table className="w-full text-sm text-left border-collapse whitespace-nowrap">
                 <thead className="bg-slate-50 dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800/60">
                   <tr>
                     <th className="p-4 w-12 text-center">
@@ -975,7 +954,7 @@ export default function AdminMaster() {
                     <th className="p-4 font-bold">Hari</th>
                     <th className="p-4 font-bold">Kelas & Mapel</th>
                     <th className="p-4 font-bold">Guru Pengajar</th>
-                    <th className="p-4 font-bold text-center w-24">Aksi</th>
+                    <th className="p-4 font-bold text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1015,7 +994,7 @@ export default function AdminMaster() {
                           <span className="font-medium text-slate-600 dark:text-slate-400">
                             {sch.subjects?.subject_name}
                           </span>
-                          <span className="block text-xs text-slate-400 dark:text-slate-500 mt-1.5 font-mono flex items-center gap-1">
+                          <span className="block text-xs text-slate-400 dark:text-slate-500 mt-1.5 font-mono">
                             ⏱️ {sch.start_time?.substring(0, 5) || "--:--"} -{" "}
                             {sch.end_time?.substring(0, 5) || "--:--"} WIB
                           </span>
@@ -1039,12 +1018,11 @@ export default function AdminMaster() {
                               mapelDasar.some((mapel) =>
                                 namaMapel.includes(mapel),
                               )
-                            ) {
+                            )
                               return (
                                 sch.classes?.profiles?.full_name ||
                                 "- (Wali Kelas Belum Diatur)"
                               );
-                            }
                             return sch.profiles?.full_name || "-";
                           })()}
                         </td>
@@ -1092,13 +1070,14 @@ export default function AdminMaster() {
           </section>
         )}
 
+        {/* MODAL HAPUS */}
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
               className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm"
               onClick={() => setShowDeleteModal(false)}
             ></div>
-            <div className="relative w-full max-w-md transform overflow-hidden rounded-[24px] bg-white dark:bg-[#1E293B] p-6 text-center shadow-2xl border border-slate-100 dark:border-slate-800 transition-all animate-fadeInFast">
+            <div className="relative w-full max-w-md transform overflow-hidden rounded-[24px] bg-white dark:bg-[#1E293B] p-6 text-center shadow-2xl border border-slate-100 dark:border-slate-800 animate-fadeInFast">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-100 dark:bg-rose-500/10 mb-4 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40">
                 <svg
                   className="h-7 w-7"
@@ -1118,7 +1097,7 @@ export default function AdminMaster() {
                 Hapus Data
               </h3>
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Apakah Anda yakin ingin menghapus <b>{deleteTarget.name}</b>
+                Apakah Anda yakin ingin menghapus <b>{deleteTarget.name}</b>?
               </p>
               <div className="mt-6 flex gap-3">
                 <button
@@ -1138,7 +1117,7 @@ export default function AdminMaster() {
                     );
                     setShowDeleteModal(false);
                   }}
-                  className="w-full rounded-xl bg-rose-600 py-3 text-sm font-bold text-white shadow-lg shadow-rose-500/20 hover:bg-rose-700 transition-all"
+                  className="w-full rounded-xl bg-rose-600 py-3 text-sm font-bold text-white shadow-lg hover:bg-rose-700 transition-all"
                 >
                   Ya, Hapus
                 </button>
@@ -1147,10 +1126,11 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL TAMBAH SISWA */}
         {showStudentsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-md shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-md shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
                 Tambah Siswa Baru
               </h2>
               <form
@@ -1174,30 +1154,20 @@ export default function AdminMaster() {
                   </label>
                   <select
                     required
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={newStudent.class_id}
                     onChange={(e) =>
                       setNewStudent({ ...newStudent, class_id: e.target.value })
                     }
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Kelas
-                    </option>
+                    <option value="">Pilih Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
                     Nama Lengkap
@@ -1205,11 +1175,7 @@ export default function AdminMaster() {
                   <input
                     required
                     placeholder="Misal: Siswa"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={newStudent.full_name}
                     onChange={(e) =>
                       setNewStudent({
@@ -1219,70 +1185,48 @@ export default function AdminMaster() {
                     }
                   />
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Nomor Induk (NISN/NIS)
+                    NISN/NIS
                   </label>
                   <input
                     required
                     placeholder="Misal: 1000"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white font-mono dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={newStudent.nis}
                     onChange={(e) =>
                       setNewStudent({ ...newStudent, nis: e.target.value })
                     }
                   />
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
                     Gender
                   </label>
                   <select
                     required
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={newStudent.gender}
                     onChange={(e) =>
                       setNewStudent({ ...newStudent, gender: e.target.value })
                     }
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Gender
-                    </option>
-                    <option
-                      value="L"
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Laki-laki
-                    </option>
-                    <option
-                      value="P"
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Perempuan
-                    </option>
+                    <option value="">Gender</option>
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
                   </select>
                 </div>
-
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowStudentsModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black transition-all shadow-lg shadow-indigo-600/20 active:scale-[0.99] text-sm"
+                    className="flex-1 py-3 md:py-4 bg-indigo-600 text-white rounded-xl md:rounded-2xl font-black shadow-lg text-sm"
                   >
                     Simpan Data
                   </button>
@@ -1292,10 +1236,11 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL EDIT SISWA */}
         {showEditStudentModal && editStudentData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-md shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-md shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
                 Edit Data Siswa
               </h2>
               <form onSubmit={handleUpdateStudent} className="space-y-4">
@@ -1305,7 +1250,7 @@ export default function AdminMaster() {
                   </label>
                   <select
                     required
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={editStudentData.class_id}
                     onChange={(e) =>
                       setEditStudentData({
@@ -1314,35 +1259,21 @@ export default function AdminMaster() {
                       })
                     }
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Kelas
-                    </option>
+                    <option value="">Pilih Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
                     Nama Lengkap
                   </label>
                   <input
                     required
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={editStudentData.full_name}
                     onChange={(e) =>
                       setEditStudentData({
@@ -1352,18 +1283,13 @@ export default function AdminMaster() {
                     }
                   />
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Nomor Induk (NISN/NIS)
+                    NISN/NIS
                   </label>
                   <input
                     required
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white font-mono dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={editStudentData.nis}
                     onChange={(e) =>
                       setEditStudentData({
@@ -1373,14 +1299,13 @@ export default function AdminMaster() {
                     }
                   />
                 </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
                     Gender
                   </label>
                   <select
                     required
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
                     value={editStudentData.gender}
                     onChange={(e) =>
                       setEditStudentData({
@@ -1389,40 +1314,24 @@ export default function AdminMaster() {
                       })
                     }
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Gender
-                    </option>
-                    <option
-                      value="L"
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Laki-laki
-                    </option>
-                    <option
-                      value="P"
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Perempuan
-                    </option>
+                    <option value="">Gender</option>
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
                   </select>
                 </div>
-
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowEditStudentModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black transition-all shadow-lg shadow-amber-500/20 active:scale-[0.99] text-sm"
+                    className="flex-1 py-3 md:py-4 bg-amber-500 text-white rounded-xl md:rounded-2xl font-black shadow-lg text-sm"
                   >
-                    Simpan Perubahan
+                    Simpan
                   </button>
                 </div>
               </form>
@@ -1430,10 +1339,11 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL TAMBAH GURU */}
         {showTeacherModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-md shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-md shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
                 Tambah Guru Baru
               </h2>
               <form
@@ -1446,23 +1356,26 @@ export default function AdminMaster() {
                         password: newTeacher.password,
                       });
                     if (authError) throw authError;
-                    const dataToSubmit = {
-                      id: authData.user.id,
-                      full_name: newTeacher.full_name,
-                      username: newTeacher.username,
-                      email: newTeacher.email,
-                      roles: [newTeacher.roles],
-                    };
-                    handleAddData("profiles", dataToSubmit, () => {
-                      setNewTeacher({
-                        full_name: "",
-                        username: "",
-                        email: "",
-                        password: "",
-                        roles: "teacher",
-                      });
-                      setShowTeacherModal(false);
-                    });
+                    handleAddData(
+                      "profiles",
+                      {
+                        id: authData.user.id,
+                        full_name: newTeacher.full_name,
+                        username: newTeacher.username,
+                        email: newTeacher.email,
+                        roles: [newTeacher.roles],
+                      },
+                      () => {
+                        setNewTeacher({
+                          full_name: "",
+                          username: "",
+                          email: "",
+                          password: "",
+                          roles: "teacher",
+                        });
+                        setShowTeacherModal(false);
+                      },
+                    );
                   } catch (error) {
                     alert("Gagal mendaftarkan guru: " + error.message);
                   }
@@ -1475,13 +1388,8 @@ export default function AdminMaster() {
                   </label>
                   <input
                     required
-                    autoComplete="off"
                     placeholder="Misal: Guru, S.Pd"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={newTeacher.full_name}
                     onChange={(e) =>
                       setNewTeacher({
@@ -1497,13 +1405,8 @@ export default function AdminMaster() {
                   </label>
                   <input
                     required
-                    autoComplete="off"
                     placeholder="Misal: Guru"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={newTeacher.username}
                     onChange={(e) =>
                       setNewTeacher({ ...newTeacher, username: e.target.value })
@@ -1517,13 +1420,8 @@ export default function AdminMaster() {
                   <input
                     required
                     type="email"
-                    autoComplete="off"
                     placeholder="Misal: guru@padmajaya.sch.id"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={newTeacher.email}
                     onChange={(e) =>
                       setNewTeacher({ ...newTeacher, email: e.target.value })
@@ -1537,13 +1435,8 @@ export default function AdminMaster() {
                   <input
                     required
                     type="password"
-                    autoComplete="new-password"
                     placeholder="Minimal 6 karakter"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={newTeacher.password}
                     onChange={(e) =>
                       setNewTeacher({ ...newTeacher, password: e.target.value })
@@ -1556,48 +1449,28 @@ export default function AdminMaster() {
                   </label>
                   <select
                     required
-                    autoComplete="off"
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={newTeacher.roles}
                     onChange={(e) =>
                       setNewTeacher({ ...newTeacher, roles: e.target.value })
                     }
                   >
-                    <option
-                      value="teacher"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Guru Pengajar
-                    </option>
-                    <option
-                      value="homeroom"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Wali Kelas
-                    </option>
-                    <option
-                      value="admin"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Admin Master
-                    </option>
+                    <option value="teacher">Guru Pengajar</option>
+                    <option value="homeroom">Wali Kelas</option>
+                    <option value="admin">Admin Master</option>
                   </select>
                 </div>
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowTeacherModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black transition-all shadow-lg shadow-indigo-600/20 text-sm"
+                    className="flex-1 py-3 md:py-4 bg-indigo-600 text-white rounded-xl md:rounded-2xl font-black shadow-lg text-sm"
                   >
                     Simpan Data
                   </button>
@@ -1607,10 +1480,11 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL EDIT GURU */}
         {showEditTeacherModal && editTeacherData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-md shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-md shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
                 Edit Data Guru
               </h2>
               <form onSubmit={handleUpdateTeacher} className="space-y-4">
@@ -1620,11 +1494,7 @@ export default function AdminMaster() {
                   </label>
                   <input
                     required
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={editTeacherData.full_name}
                     onChange={(e) =>
                       setEditTeacherData({
@@ -1640,11 +1510,7 @@ export default function AdminMaster() {
                   </label>
                   <input
                     required
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
-                    style={{
-                      WebkitBoxShadow: "0 0 0 1000px transparent inset",
-                      transition: "background-color 5000s ease-in-out 0s",
-                    }}
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={editTeacherData.username}
                     onChange={(e) =>
                       setEditTeacherData({
@@ -1656,15 +1522,12 @@ export default function AdminMaster() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Email{" "}
-                    <span className="font-normal opacity-70">
-                      (Hanya Bisa Dilihat)
-                    </span>
+                    Email (Hanya Dilihat)
                   </label>
                   <input
                     disabled
                     type="email"
-                    className="w-full p-4 rounded-2xl border font-bold text-sm outline-none bg-slate-100 border-slate-200 text-slate-500 dark:bg-[#1E293B] dark:border-slate-800 dark:text-slate-400 cursor-not-allowed"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-bold text-sm bg-slate-100 text-slate-500 dark:bg-[#1E293B] dark:border-slate-800 cursor-not-allowed"
                     value={editTeacherData.email}
                   />
                 </div>
@@ -1674,7 +1537,7 @@ export default function AdminMaster() {
                   </label>
                   <select
                     required
-                    className="w-full p-4 rounded-2xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-slate-50 border-slate-200 text-slate-900 focus:bg-white dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617] uppercase tracking-wider"
+                    className="w-full p-3.5 md:p-4 rounded-xl md:rounded-2xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
                     value={editTeacherData.roles}
                     onChange={(e) =>
                       setEditTeacherData({
@@ -1683,39 +1546,24 @@ export default function AdminMaster() {
                       })
                     }
                   >
-                    <option
-                      value="teacher"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Guru Pengajar
-                    </option>
-                    <option
-                      value="homeroom"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Wali Kelas
-                    </option>
-                    <option
-                      value="admin"
-                      className="bg-white dark:bg-[#020617] text-slate-900 dark:text-white"
-                    >
-                      Admin Master
-                    </option>
+                    <option value="teacher">Guru Pengajar</option>
+                    <option value="homeroom">Wali Kelas</option>
+                    <option value="admin">Admin Master</option>
                   </select>
                 </div>
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowEditTeacherModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black transition-all shadow-lg shadow-amber-500/20 active:scale-[0.99] text-sm"
+                    className="flex-1 py-3 md:py-4 bg-amber-500 text-white rounded-xl md:rounded-2xl font-black shadow-lg text-sm"
                   >
-                    Simpan Perubahan
+                    Simpan
                   </button>
                 </div>
               </form>
@@ -1723,11 +1571,12 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL TAMBAH JADWAL */}
         {showAddScheduleModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-2xl shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
-                Tambah Jadwal Mengajar
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-2xl shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
+                Tambah Jadwal
               </h2>
               <form
                 onSubmit={(e) => {
@@ -1745,14 +1594,14 @@ export default function AdminMaster() {
                     setShowAddScheduleModal(false);
                   });
                 }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4"
               >
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Guru Pengajar
+                    Guru
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={newSchedule.teacher_id}
                     onChange={(e) =>
                       setNewSchedule({
@@ -1762,18 +1611,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Guru
-                    </option>
+                    <option value="">Pilih Guru</option>
                     {teachers.map((t) => (
-                      <option
-                        key={t.id}
-                        value={t.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={t.id} value={t.id}>
                         {t.full_name}
                       </option>
                     ))}
@@ -1784,7 +1624,7 @@ export default function AdminMaster() {
                     Kelas
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={newSchedule.class_id}
                     onChange={(e) =>
                       setNewSchedule({
@@ -1794,18 +1634,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Kelas
-                    </option>
+                    <option value="">Pilih Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
@@ -1813,10 +1644,10 @@ export default function AdminMaster() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Mata Pelajaran
+                    Mapel
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={newSchedule.subject_id}
                     onChange={(e) =>
                       setNewSchedule({
@@ -1826,18 +1657,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Mapel
-                    </option>
+                    <option value="">Pilih Mapel</option>
                     {subjects.map((s) => (
-                      <option
-                        key={s.id}
-                        value={s.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={s.id} value={s.id}>
                         {s.subject_name}
                       </option>
                     ))}
@@ -1848,7 +1670,7 @@ export default function AdminMaster() {
                     Hari
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={newSchedule.day_name}
                     onChange={(e) =>
                       setNewSchedule({
@@ -1858,18 +1680,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Hari
-                    </option>
+                    <option value="">Pilih Hari</option>
                     {["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].map((d) => (
-                      <option
-                        key={d}
-                        value={d}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={d} value={d}>
                         {d}
                       </option>
                     ))}
@@ -1880,7 +1693,7 @@ export default function AdminMaster() {
                     Sesi Ke-
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={newSchedule.session_order}
                     onChange={(e) =>
                       setNewSchedule({
@@ -1890,18 +1703,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Sesi
-                    </option>
+                    <option value="">Pilih Sesi</option>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((num) => (
-                      <option
-                        key={num}
-                        value={num}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={num} value={num}>
                         Sesi {num}
                       </option>
                     ))}
@@ -1914,7 +1718,7 @@ export default function AdminMaster() {
                     </label>
                     <input
                       type="time"
-                      className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                      className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                       value={newSchedule.start_time}
                       onChange={(e) =>
                         setNewSchedule({
@@ -1931,7 +1735,7 @@ export default function AdminMaster() {
                     </label>
                     <input
                       type="time"
-                      className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                      className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                       value={newSchedule.end_time}
                       onChange={(e) =>
                         setNewSchedule({
@@ -1943,18 +1747,17 @@ export default function AdminMaster() {
                     />
                   </div>
                 </div>
-
                 <div className="sm:col-span-2 flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowAddScheduleModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black transition-all shadow-lg shadow-indigo-600/20 active:scale-[0.99] text-sm"
+                    className="flex-1 py-3 md:py-4 bg-indigo-600 text-white rounded-xl font-black shadow-lg text-sm"
                   >
                     Simpan Data
                   </button>
@@ -1964,22 +1767,23 @@ export default function AdminMaster() {
           </div>
         )}
 
+        {/* MODAL EDIT JADWAL */}
         {showEditScheduleModal && editScheduleData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in">
-            <div className="p-8 rounded-[32px] w-full max-w-2xl shadow-2xl border transition-colors bg-white border-transparent dark:bg-[#0F172A] dark:border-slate-800 animate-scale-up">
-              <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-800 dark:text-white">
-                Edit Jadwal Mengajar
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+            <div className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] w-full max-w-2xl shadow-2xl bg-white dark:bg-[#0F172A] border dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl md:text-2xl font-black mb-6 text-slate-800 dark:text-white">
+                Edit Jadwal
               </h2>
               <form
                 onSubmit={handleUpdateSchedule}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4"
               >
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Guru Pengajar
+                    Guru
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={editScheduleData.teacher_id}
                     onChange={(e) =>
                       setEditScheduleData({
@@ -1989,18 +1793,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Guru
-                    </option>
+                    <option value="">Pilih Guru</option>
                     {teachers.map((t) => (
-                      <option
-                        key={t.id}
-                        value={t.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={t.id} value={t.id}>
                         {t.full_name}
                       </option>
                     ))}
@@ -2011,7 +1806,7 @@ export default function AdminMaster() {
                     Kelas
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={editScheduleData.class_id}
                     onChange={(e) =>
                       setEditScheduleData({
@@ -2021,18 +1816,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Kelas
-                    </option>
+                    <option value="">Pilih Kelas</option>
                     {classes.map((c) => (
-                      <option
-                        key={c.id}
-                        value={c.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={c.id} value={c.id}>
                         {c.class_name}
                       </option>
                     ))}
@@ -2040,10 +1826,10 @@ export default function AdminMaster() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    Mata Pelajaran
+                    Mapel
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={editScheduleData.subject_id}
                     onChange={(e) =>
                       setEditScheduleData({
@@ -2053,18 +1839,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Mapel
-                    </option>
+                    <option value="">Pilih Mapel</option>
                     {subjects.map((s) => (
-                      <option
-                        key={s.id}
-                        value={s.id}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={s.id} value={s.id}>
                         {s.subject_name}
                       </option>
                     ))}
@@ -2075,7 +1852,7 @@ export default function AdminMaster() {
                     Hari
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={editScheduleData.day_name}
                     onChange={(e) =>
                       setEditScheduleData({
@@ -2085,18 +1862,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Hari
-                    </option>
+                    <option value="">Pilih Hari</option>
                     {["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].map((d) => (
-                      <option
-                        key={d}
-                        value={d}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={d} value={d}>
                         {d}
                       </option>
                     ))}
@@ -2107,7 +1875,7 @@ export default function AdminMaster() {
                     Sesi Ke-
                   </label>
                   <select
-                    className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                    className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                     value={editScheduleData.session_order}
                     onChange={(e) =>
                       setEditScheduleData({
@@ -2117,18 +1885,9 @@ export default function AdminMaster() {
                     }
                     required
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                    >
-                      Pilih Sesi
-                    </option>
+                    <option value="">Pilih Sesi</option>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((num) => (
-                      <option
-                        key={num}
-                        value={num}
-                        className="bg-white text-slate-900 dark:bg-[#020617] dark:text-white"
-                      >
+                      <option key={num} value={num}>
                         Sesi {num}
                       </option>
                     ))}
@@ -2141,7 +1900,7 @@ export default function AdminMaster() {
                     </label>
                     <input
                       type="time"
-                      className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                      className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                       value={editScheduleData.start_time}
                       onChange={(e) =>
                         setEditScheduleData({
@@ -2158,7 +1917,7 @@ export default function AdminMaster() {
                     </label>
                     <input
                       type="time"
-                      className="w-full p-4 rounded-xl border font-black text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 border-slate-200 text-slate-900 dark:bg-[#020617] dark:border-slate-700 dark:text-white dark:focus:bg-[#020617]"
+                      className="w-full p-3.5 md:p-4 rounded-xl border font-black text-sm bg-slate-50 dark:bg-[#020617] dark:text-white dark:border-slate-700 outline-none"
                       value={editScheduleData.end_time}
                       onChange={(e) =>
                         setEditScheduleData({
@@ -2170,20 +1929,19 @@ export default function AdminMaster() {
                     />
                   </div>
                 </div>
-
                 <div className="sm:col-span-2 flex gap-4 pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowEditScheduleModal(false)}
-                    className="w-1/3 py-4 rounded-2xl font-bold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-sm"
+                    className="w-1/3 py-3 md:py-4 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black transition-all shadow-lg shadow-amber-500/20 active:scale-[0.99] text-sm"
+                    className="flex-1 py-3 md:py-4 bg-amber-500 text-white rounded-xl font-black shadow-lg text-sm"
                   >
-                    Simpan Perubahan
+                    Simpan
                   </button>
                 </div>
               </form>
